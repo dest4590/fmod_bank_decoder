@@ -363,7 +363,9 @@ impl App {
 }
 
 impl eframe::App for App {
-    fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
+    fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        let ctx = ui.ctx().clone();
+
         let is_decoding = {
             let s = self.decode_state.lock().unwrap();
             s.progress.is_some()
@@ -383,8 +385,8 @@ impl eframe::App for App {
             }
         }
 
-        egui::TopBottomPanel::top("menu_bar").show(ctx, |ui| {
-            egui::menu::bar(ui, |ui| {
+        egui::Panel::top("menu_bar").show(ui, |ui| {
+            egui::MenuBar::new().ui(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Open Bank Files...").clicked() {
                         if let Some(paths) = rfd::FileDialog::new()
@@ -393,7 +395,7 @@ impl eframe::App for App {
                         {
                             self.load_banks(paths);
                         }
-                        ui.close_menu();
+                        ui.close();
                     }
                     if ui.button("Open Bank Folder...").clicked() {
                         if let Some(dir) = rfd::FileDialog::new().pick_folder() {
@@ -415,14 +417,14 @@ impl eframe::App for App {
                                 self.status = format!("No .bank files found in {}", dir.display());
                             }
                         }
-                        ui.close_menu();
+                        ui.close();
                     }
                     ui.separator();
                     if ui.button("Set Output Dir...").clicked() {
                         if let Some(dir) = rfd::FileDialog::new().pick_folder() {
                             self.output_dir = Some(dir);
                         }
-                        ui.close_menu();
+                        ui.close();
                     }
                     ui.separator();
                     if ui.button("Exit").clicked() {
@@ -432,26 +434,26 @@ impl eframe::App for App {
                 ui.menu_button("Edit", |ui| {
                     if ui.button("Select All").clicked() {
                         self.selected_samples.iter_mut().for_each(|s| *s = true);
-                        ui.close_menu();
+                        ui.close();
                     }
                     if ui.button("Deselect All").clicked() {
                         self.selected_samples.iter_mut().for_each(|s| *s = false);
-                        ui.close_menu();
+                        ui.close();
                     }
                 });
                 ui.menu_button("Help", |ui| {
                     if ui.button("About").clicked() {
                         self.show_about = true;
-                        ui.close_menu();
+                        ui.close();
                     }
                 });
             });
         });
 
-        egui::SidePanel::left("side_panel")
+        egui::Panel::left("side_panel")
             .resizable(true)
-            .default_width(220.0)
-            .show(ctx, |ui| {
+            .default_size(220.0)
+            .show(ui, |ui| {
                 ui.heading("Controls");
                 ui.separator();
 
@@ -521,7 +523,7 @@ impl eframe::App for App {
                 ui.label(egui::RichText::new(&self.status).small().italics());
             });
 
-        egui::CentralPanel::default().show(ctx, |ui| {
+        egui::CentralPanel::default().show(ui, |ui| {
             if !self.bank_paths.is_empty() {
                 ui.label(format!("Banks ({}):", self.bank_paths.len()));
                 egui::ScrollArea::horizontal()
@@ -613,7 +615,7 @@ impl eframe::App for App {
                         .collapsible(false)
                         .resizable(false)
                         .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
-                        .show(ctx, |ui| {
+                        .show(&ctx, |ui| {
                             ui.label("Decoding samples...");
                             ui.label(&progress.current_file);
                             let progress_bar = if progress.total > 0 {
@@ -635,19 +637,18 @@ impl eframe::App for App {
                 .collapsible(false)
                 .resizable(false)
                 .anchor(egui::Align2::CENTER_CENTER, [0.0, 0.0])
-                .show(ctx, |ui| {
+                .show(&ctx, |ui| {
                     ui.heading("FMOD Bank Decoder");
-                    ui.label("v0.3.0");
+                    ui.label("v0.1.0");
                     ui.separator();
                     ui.label("Extract audio from FMOD .bank files");
                     ui.separator();
                     ui.label("Supported formats:");
                     ui.label("  - PCM8, PCM16, PCM Float -> WAV");
-                    ui.label("  - Vorbis -> FSB5 export (requires vgmstream)");
+                    ui.label("  - Vorbis -> vgmstream decode");
                     ui.separator();
                     ui.label("Vorbis: FMOD uses a proprietary Vorbis codec.");
-                    ui.label("Export as FSB5 and decode with vgmstream:");
-                    ui.label("  vgmstream-cli input.fsb -o output.wav");
+                    ui.label("Decoded via bundled vgmstream.");
                     ui.separator();
                     if ui.button("Close").clicked() {
                         self.show_about = false;

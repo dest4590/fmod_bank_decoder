@@ -2,7 +2,7 @@
 
 Extract audio from FMOD `.bank` files. Pulls out PCM and Vorbis streams, dumps them as WAV.
 
-Built primarily for extracting soundtracks and SFX from [Noita](https://www.nolla.fi/noita/) (2020), but works with any FMOD Studio game.
+Built primarily for extracting soundtracks and SFX from [Noita](https://noitagame.com/), but works with any FMOD Studio game.
 
 ## Why?
 
