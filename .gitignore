@@ -1,0 +1,6 @@
+/target
+/decoded_output
+/test_*
+tools/vgmstream/
+tools/vgmstream-win.zip
+*.pdb
