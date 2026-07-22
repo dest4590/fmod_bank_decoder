@@ -58,7 +58,8 @@ jobs:
           cp target/${{ matrix.target }}/release/fmod_bank_decoder.exe dist/
           cp target/${{ matrix.target }}/release/ui.exe dist/
           cp -r target/release/tools dist/
-          cp README.md LICENSE dist/
+          cp README.md dist/
+          cp LICENSE dist/
           7z a fmod_bank_decoder-${{ matrix.target }}.zip dist/*
 
       - name: Package (Linux)
