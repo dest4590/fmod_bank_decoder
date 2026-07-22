@@ -16,10 +16,8 @@ jobs:
         include:
           - os: windows-latest
             target: x86_64-pc-windows-msvc
-            ext: .exe
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-            ext: ""
 
     runs-on: ${{ matrix.os }}
 
@@ -57,8 +55,8 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/fmod_bank_decoder.exe${{ matrix.ext }} dist/
-          cp target/${{ matrix.target }}/release/ui.exe${{ matrix.ext }} dist/
+          cp target/${{ matrix.target }}/release/fmod_bank_decoder.exe dist/
+          cp target/${{ matrix.target }}/release/ui.exe dist/
           cp -r target/release/tools dist/
           cp README.md LICENSE dist/
           7z a fmod_bank_decoder-${{ matrix.target }}.zip dist/*
@@ -67,8 +65,8 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           mkdir -p dist
-          cp target/${{ matrix.target }}/release/fmod_bank_decoder${{ matrix.ext }} dist/
-          cp target/${{ matrix.target }}/release/ui${{ matrix.ext }} dist/
+          cp target/${{ matrix.target }}/release/fmod_bank_decoder dist/
+          cp target/${{ matrix.target }}/release/ui dist/
           cp -r target/release/tools dist/
           cp README.md LICENSE dist/
           tar czf fmod_bank_decoder-${{ matrix.target }}.tar.gz -C dist .
