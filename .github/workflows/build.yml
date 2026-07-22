@@ -50,8 +50,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y ffmpeg
           mkdir -p target/release/tools/vgmstream
-          curl -L -o vgmstream.tar.gz https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-linux-x86.tar.gz
-          tar xzf vgmstream.tar.gz -C target/release/tools/vgmstream
+          curl -L -o vgmstream.zip https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-linux.zip
+          unzip vgmstream.zip -d target/release/tools/vgmstream
 
       - name: Package (Windows)
         if: runner.os == 'Windows'

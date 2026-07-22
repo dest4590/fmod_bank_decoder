@@ -527,6 +527,7 @@ impl eframe::App for App {
             if !self.bank_paths.is_empty() {
                 ui.label(format!("Banks ({}):", self.bank_paths.len()));
                 egui::ScrollArea::horizontal()
+                    .id_salt("bank_list")
                     .max_height(60.0)
                     .show(ui, |ui| {
                         ui.horizontal_wrapped(|ui| {
@@ -566,6 +567,7 @@ impl eframe::App for App {
 
                 let available = ui.available_height() - 10.0;
                 egui::ScrollArea::vertical()
+                    .id_salt("samples_table")
                     .max_height(available)
                     .show(ui, |ui| {
                         egui::Grid::new("samples_grid")
