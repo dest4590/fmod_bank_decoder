@@ -223,7 +223,7 @@ fn process_bank(
                         .unwrap_or_else(|| std::path::Path::new("."))
                         .join("tools")
                         .join("vgmstream")
-                        .join("vgmstream-cli.exe");
+                        .join(format!("vgmstream-cli{}", std::env::consts::EXE_SUFFIX));
                     let status = std::process::Command::new(&vgmstream_path)
                         .args([
                             "-o",

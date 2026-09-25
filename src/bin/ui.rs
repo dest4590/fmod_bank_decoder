@@ -302,14 +302,16 @@ impl App {
                         let fsb5_path = std::env::temp_dir().join(format!("{}.fsb", safe_name));
                         if std::fs::write(&fsb5_path, fsb5_data).is_ok() {
                             let wav_path = out.join(format!("{}.wav", safe_name));
+                            let vgmstream_name =
+                                format!("vgmstream-cli{}", std::env::consts::EXE_SUFFIX);
                             let vgmstream_path = std::env::current_exe()
                                 .ok()
                                 .and_then(|p| {
                                     p.parent().map(|d| {
-                                        d.join("tools").join("vgmstream").join("vgmstream-cli.exe")
+                                        d.join("tools").join("vgmstream").join(&vgmstream_name)
                                     })
                                 })
-                                .unwrap_or_else(|| std::path::PathBuf::from("vgmstream-cli.exe"));
+                                .unwrap_or_else(|| std::path::PathBuf::from(&vgmstream_name));
                             let status = std::process::Command::new(&vgmstream_path)
                                 .args([
                                     "-o",
