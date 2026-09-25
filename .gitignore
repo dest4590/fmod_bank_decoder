@@ -4,3 +4,4 @@
 tools/vgmstream/
 tools/vgmstream-win.zip
 *.pdb
+.DS_Store

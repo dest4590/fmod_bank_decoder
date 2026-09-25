@@ -18,6 +18,8 @@ jobs:
             target: x86_64-pc-windows-msvc
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
+          - os: macos-latest
+            target: aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
 
@@ -40,7 +42,7 @@ jobs:
         if: runner.os == 'Windows'
         run: |
           mkdir -p target/release/tools/vgmstream
-          curl -L -o vgmstream.zip https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-win.zip
+          curl -L -o vgmstream.zip https://github.com/vgmstream/vgmstream-releases/releases/download/nightly/vgmstream-win64.zip
           unzip vgmstream.zip -d target/release/tools/vgmstream
 
       - name: Bundle vgmstream (Linux)
@@ -48,8 +50,16 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y ffmpeg
           mkdir -p target/release/tools/vgmstream
-          curl -L -o vgmstream.zip https://github.com/vgmstream/vgmstream/releases/latest/download/vgmstream-linux.zip
-          unzip vgmstream.zip -d target/release/tools/vgmstream
+          curl -L -o vgmstream.tar.gz https://github.com/vgmstream/vgmstream-releases/releases/download/nightly/vgmstream-linux-cli.tar.gz
+          tar xzf vgmstream.tar.gz -C target/release/tools/vgmstream
+
+      - name: Bundle vgmstream (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p target/release/tools/vgmstream
+          curl -L -o vgmstream.tar.gz https://github.com/vgmstream/vgmstream-releases/releases/download/nightly/vgmstream-mac-cli.tar.gz
+          tar xzf vgmstream.tar.gz -C target/release/tools/vgmstream
+          chmod +x target/release/tools/vgmstream/vgmstream-cli
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
@@ -70,6 +80,17 @@ jobs:
           cp target/${{ matrix.target }}/release/ui dist/
           cp -r target/release/tools dist/
           cp README.md LICENSE dist/
+          tar czf fmod_bank_decoder-${{ matrix.target }}.tar.gz -C dist .
+
+      - name: Package (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          mkdir -p dist
+          cp target/${{ matrix.target }}/release/fmod_bank_decoder dist/
+          cp target/${{ matrix.target }}/release/ui dist/
+          cp -r target/release/tools dist/
+          cp README.md LICENSE dist/
+          chmod +x dist/fmod_bank_decoder dist/ui
           tar czf fmod_bank_decoder-${{ matrix.target }}.tar.gz -C dist .
 
       - name: Upload artifact
