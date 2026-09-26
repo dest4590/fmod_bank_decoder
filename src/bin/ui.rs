@@ -299,7 +299,8 @@ impl App {
                     let sample_rate = sample.sample_rate;
 
                     if codec_id == 0x0F {
-                        let fsb5_path = std::env::temp_dir().join(format!("{}.fsb", safe_name));
+                        let fsb5_path = std::env::temp_dir()
+                            .join(format!("{}_{}_{}.fsb", bank_name, local_idx, safe_name));
                         if std::fs::write(&fsb5_path, fsb5_data).is_ok() {
                             let wav_path = out.join(format!("{}.wav", safe_name));
                             let vgmstream_name =
@@ -314,6 +315,8 @@ impl App {
                                 .unwrap_or_else(|| std::path::PathBuf::from(&vgmstream_name));
                             let status = std::process::Command::new(&vgmstream_path)
                                 .args([
+                                    "-s",
+                                    &(local_idx + 1).to_string(),
                                     "-o",
                                     wav_path.to_str().unwrap(),
                                     fsb5_path.to_str().unwrap(),

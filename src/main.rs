@@ -214,7 +214,9 @@ fn process_bank(
 
         // Vorbis: use vgmstream to decode FSB5 to WAV
         if codec_id == 0x0F {
-            let fsb5_path = std::env::temp_dir().join(format!("{safe_name}.fsb"));
+            // Unique per bank+sample: banks are processed in parallel
+            let bank_stem = bank_path.file_stem().unwrap_or_default().to_string_lossy();
+            let fsb5_path = std::env::temp_dir().join(format!("{bank_stem}_{i}_{safe_name}.fsb"));
             match std::fs::write(&fsb5_path, &fsb5_data_owned) {
                 Ok(_) => {
                     let wav_path = bank_output.join(format!("{safe_name}.wav"));
@@ -224,8 +226,11 @@ fn process_bank(
                         .join("tools")
                         .join("vgmstream")
                         .join(format!("vgmstream-cli{}", std::env::consts::EXE_SUFFIX));
+                    // The .fsb holds every sample in the bank; without -s vgmstream always decodes subsong 1 (1-based).
                     let status = std::process::Command::new(&vgmstream_path)
                         .args([
+                            "-s",
+                            &(i + 1).to_string(),
                             "-o",
                             wav_path.to_str().unwrap(),
                             fsb5_path.to_str().unwrap(),
